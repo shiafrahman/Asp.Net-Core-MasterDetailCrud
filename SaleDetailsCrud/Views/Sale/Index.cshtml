@@ -1,0 +1,100 @@
+﻿@model IEnumerable<SalesMaster>
+@{
+    Layout = "/Views/Shared/_Layout.cshtml";
+}
+<br/>
+<br/>
+<p>
+    <a href="@Url.Action("Create","Sale")" class="btn btn-outline-success">Add Sale</a>
+</p>
+
+@using (Html.BeginForm("Search", "Sale", FormMethod.Get))
+{
+    <div class="row">
+        <div class="col-6">
+            <div class="form-group">
+                @Html.TextBox("searchTerm", null, new { @class = "form-control", placeholder = "Search by ID, InvoiceNumber, CustomerName or MobileNo" })
+            </div>
+        </div>
+        <div class="col-6">
+            <button type="submit" class="btn btn-primary">Search</button>
+        </div>
+
+    </div>
+    
+    
+}
+
+<br /><br />
+
+<h3 class="text-center">Sale Information List</h3>
+
+<div class="row">
+    @foreach (var item in Model)
+    {
+
+        <div class="card mb-2">
+            <div class="card-header d-flex justify-content-between">
+                <div>
+
+                    <label class="mr-2"><b>Invoice:</b> @Html.DisplayFor(i => item.InvoiceNumber)</label><br />
+                    <label class="mr-2"><b>Name:</b> @Html.DisplayFor(i => item.CustomerName)</label><br />
+                    <label class="mr-2"><b>Mobile No:</b> @Html.DisplayFor(i => item.MobileNo)</label><br />
+                    <label class="mr-2"><b>Address:</b> @Html.DisplayFor(i => item.Address)</label><br />
+
+                </div>
+                <div class="card-body">
+                    <table class="table table-striped">
+                        <thead class="accordion-collapse">
+                            <tr>
+                                <th>Product Code</th>
+                                <th>ProductName</th>
+                                <th>Price</th>
+                                <th>Quantity</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var info in item.SalesDetails)
+                            {
+                                <tr>
+                                    <td>@Html.DisplayFor(e => info.ProductCode)</td>
+                                    <td>@Html.DisplayFor(e => info.ProductName)</td>
+                                    <td>@Html.DisplayFor(e => info.Price)</td>
+                                    <td>@Html.DisplayFor(e => info.Quantity)</td>
+                                </tr>
+                            }
+
+                        </tbody>
+
+                    </table>
+                </div>
+                <div>
+                    <a href="@Url.Action("Edit", "Sale", new {id=item.SalesMasterId})" class="btn btn-outline-primary">Edit</a>
+                    <input id="btnEntryDelete" onclick="Delete(@item.SalesMasterId)" class="btn btn-outline-danger" type="button" value="Delete" />
+                    <a href="@Url.Action("Details", "Sale", new {id=item.SalesMasterId})" class="btn btn-outline-secondary">Details</a>
+                    <a href="@Url.Action("TotalPrice", new { saleId = item.SalesMasterId })" class="btn btn-info">Total Price</a>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+<script src="~/jquery/jquery.min.js"></script>
+<script>
+    function Delete(id) {
+        $.ajax({
+            type: "POST",
+            data: JSON.stringify({ id: id }),
+            url: "/Sale/Delete?id=" + id,
+            datatype: "Json",
+            ContentType: "application/Json; charset=utf-8",
+            success: function (data) {
+                window.location.href = "/Sale/Index"
+            },
+            error: function (err) {
+                window.location.href = "/Sale/Index"
+            }
+        })
+
+
+    }
+</script>
